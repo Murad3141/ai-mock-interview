@@ -38,12 +38,12 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 
   useEffect(() => {
     const onCallStart = () => {
-      console.log('✅ Call started');
+      console.log('Call started');
       setCallStatus(CallStatus.ACTIVE);
     };
 
     const onCallEnd = () => {
-      console.log('📞 Call ended');
+      console.log(' Call ended');
       setCallStatus(CallStatus.FINISHED);
     };
 
