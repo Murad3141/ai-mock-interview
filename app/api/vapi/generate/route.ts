@@ -2,6 +2,7 @@ import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +32,6 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
 
     let cleanedQuestions = questions;
 
-    // Markdowndan təmizləmə
     if (cleanedQuestions.startsWith('```json')) {
         cleanedQuestions = cleanedQuestions.substring(7);
     }
@@ -74,6 +74,8 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
       .collection("interviews")
       .add(interview);
 
+    revalidatePath('/');
+
     return Response.json({ success: true }, { status: 200 });
   } catch (error: any) {
     console.error("Ümumi Server/Admin SDK Xətası:", error);
@@ -87,7 +89,6 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
 export async function GET(request: Request) {
   const { userId } = Object.fromEntries(new URL(request.url).searchParams);
 
-  // userId-nin boş olub-olmadığını yoxlayır
   if (!userId || typeof userId !== 'string' || userId.trim() === '') {
     return Response.json(
       { success: false, error: "GET sorğusu üçün düzgün userId query parametri tələb olunur." },
