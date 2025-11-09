@@ -20,7 +20,12 @@ const page = async () => {
   const isArrayValid = (arr: any) => Array.isArray(arr) && arr.length > 0;
 
   const hasPastInterviews = isArrayValid(userInterviews);
-  const hasUpcomingInterviews = isArrayValid(latestInterviews);
+  
+  const upcomingInterviewsToShow = isArrayValid(latestInterviews) 
+    ? latestInterviews 
+    : dummyInterviews.slice(0, 2);
+
+  const hasUpcomingInterviews = isArrayValid(upcomingInterviewsToShow);
 
   return (
     <>
@@ -54,7 +59,7 @@ const page = async () => {
         <div className='interviews-section'>
           {
             hasUpcomingInterviews ? (
-              latestInterviews?.map((interview: any) => (
+              upcomingInterviewsToShow.map((interview: any) => (
                 <InterviewCard key={interview.id} {...interview}/>
               ))) : (
                 <p>There are no new interviews available</p>
