@@ -105,17 +105,22 @@ export async function isAuthanticated(){
     return !!user;
 }
 
-export async function getInterviewByUserId(userId:string):Promise <Interview[] | null>{
-  const interviews= await db
-  .collection('interviews')
-  .where('userId','==',userId)
-  .orderBy('createAt','desc')
-  .get()
+export async function getInterviewByUserId(userId: string): Promise<Interview[] | null> {
+  const interviews = await db
+    .collection('users')
+    .doc(userId)
+    .collection('interviews')
+    .orderBy('createdAt', 'desc')
+    .get();
 
-  return interviews.docs.map((docs)=>({
-    id:docs.id,
-    ...docs.data()
-  })) as Interview[]
+  if (interviews.empty) {
+    return []; 
+  }
+
+  return interviews.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data()
+  })) as Interview[];
 }
 
 export async function getLatestInterviews(params:GetLatestInterviewsParams):Promise <Interview[] | null>{
