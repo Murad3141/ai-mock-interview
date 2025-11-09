@@ -31,7 +31,7 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
 
     let cleanedQuestions = questions;
 
-    // 1. Markdowndan təmizləmə əməliyyatı: ` ```json` və ` ``` ` simvollarını silir
+    // Markdowndan təmizləmə
     if (cleanedQuestions.startsWith('```json')) {
         cleanedQuestions = cleanedQuestions.substring(7);
     }
@@ -42,7 +42,6 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
 
     let parsedQuestions: any[];
     
-    // 2. İndi təmizlənmiş cavabı parse edirik
     try {
         parsedQuestions = JSON.parse(cleanedQuestions);
     } catch (e: any) {
@@ -87,6 +86,14 @@ Do not use any special characters like "/" or "*" that might confuse a voice ass
 
 export async function GET(request: Request) {
   const { userId } = Object.fromEntries(new URL(request.url).searchParams);
+
+  // userId-nin boş olub-olmadığını yoxlayır
+  if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+    return Response.json(
+      { success: false, error: "GET sorğusu üçün düzgün userId query parametri tələb olunur." },
+      { status: 400 }
+    );
+  }
 
   try {
     const snapshot = await db.collection("users")
