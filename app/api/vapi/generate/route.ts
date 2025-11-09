@@ -29,17 +29,29 @@ The questions must be formatted EXACTLY as a JSON array of strings:
 Do not use any special characters like "/" or "*" that might confuse a voice assistant.`,
     });
 
+    let cleanedQuestions = questions;
+
+    // 1. Markdowndan təmizləmə əməliyyatı: ` ```json` və ` ``` ` simvollarını silir
+    if (cleanedQuestions.startsWith('```json')) {
+        cleanedQuestions = cleanedQuestions.substring(7);
+    }
+    if (cleanedQuestions.endsWith('```')) {
+        cleanedQuestions = cleanedQuestions.substring(0, cleanedQuestions.length - 3);
+    }
+    cleanedQuestions = cleanedQuestions.trim();
+
     let parsedQuestions: any[];
     
+    // 2. İndi təmizlənmiş cavabı parse edirik
     try {
-        parsedQuestions = JSON.parse(questions);
+        parsedQuestions = JSON.parse(cleanedQuestions);
     } catch (e: any) {
-        console.error("JSON Parse Xətası:", questions, e);
+        console.error("JSON Parse Xətası:", cleanedQuestions, e);
         return Response.json(
             { 
               success: false, 
-              error: "AI cavabı düzgün JSON formatında deyil.",
-              details: `AI-dan gələn: ${questions.substring(0, 150)}...`,
+              error: "AI cavabı təmizlənmədən sonra belə düzgün JSON formatında deyil.",
+              details: `AI-dan gələn son mətn: ${cleanedQuestions.substring(0, 150)}...`,
               parseError: e.message
             }, 
             { status: 500 }
